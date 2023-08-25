@@ -1,0 +1,33 @@
+// Copyright (c) {{ year }}, Trail of Bits, Inc.
+
+#include "vast/Dialect/{{ dialect_name }}/Passes.hpp"
+
+#include "vast/Util/Warnings.hpp"
+
+VAST_RELAX_WARNINGS
+#include <mlir/Transforms/DialectConversion.h>
+VAST_UNRELAX_WARNINGS
+
+#include "vast/Conversion/Common/Passes.hpp"
+#include "vast/Util/DialectConversion.hpp"
+
+#include "vast/Dialect/{{ dialect_name }}/{{ dialect_name }}Dialect.hpp"
+#include "vast/Dialect/{{ dialect_name }}/{{ dialect_name }}Ops.hpp"
+
+#include "PassesDetails.hpp"
+
+namespace vast::{{ dialect_namespace }}
+{
+    struct {{ pass_name }}Pass : {{ pass_name }}Base< {{ pass_name }}Pass > {
+        using base = {{ pass_name }}PassBase< ExmaplePass >;
+
+        void runOnOperation() override {
+            // Add pass implementation
+        }
+    };
+
+    std::unique_ptr< mlir::Pass > create{{ pass_name }}Pass() {
+        return std::make_unique< {{ pass_name }}Pass >();
+    }
+
+} // namespace vast::{{ dialect_namespace }}

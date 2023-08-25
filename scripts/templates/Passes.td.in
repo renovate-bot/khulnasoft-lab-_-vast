@@ -1,0 +1,18 @@
+// Copyright (c) {{ year }}, Trail of Bits, Inc.
+
+#ifndef VAST_DIALECT_{{ dialect_name|upper }}_PASSES
+#define VAST_DIALECT_{{ dialect_name|upper }}_PASSES
+
+include "mlir/Pass/PassBase.td"
+
+{% for pass in passes %}
+def {{ pass.name }}Pass : Pass<"vast-{{ pass.mnemonic }}-pass", "mlir::ModuleOp"> {
+  let summary = "{{ pass.name }} pass summary.";
+  let description = [{ {{ pass.name }} pass description. }];
+
+  let dependentDialects = ["vast::{{ dialect_namespace }}::{{ dialect_name }}Dialect"];
+  let constructor = "vast::{{ dialect_namespace }}::create{{ pass.name }}Pass()";
+}
+{% endfor %}
+
+#endif // VAST_DIALECT_{{ dialect_name|upper }}_PASSES
