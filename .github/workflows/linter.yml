@@ -1,0 +1,65 @@
+#
+# Copyright (c) 2023, Trail of Bits, Inc.
+# All rights reserved.
+#
+# This source code is licensed in accordance with the terms specified in
+# the LICENSE file found in the root directory of this source tree.
+#
+
+name: Linters
+
+on:
+  pull_request:
+    paths-ignore: "docs/**"
+
+jobs:
+  cpp-linter:
+    runs-on: ubuntu-22.04
+    permissions:
+      actions: write
+      issues: write
+      pull-requests: write
+    steps:
+      - name: Clone the vast repository
+        uses: actions/checkout@v3
+        with:
+          submodules: true
+          fetch-depth: 1
+
+      - name: Install packages
+        uses: awalsh128/cache-apt-pkgs-action@latest
+        with:
+          packages: software-properties-common ccache cmake lld ninja-build
+          version: 1.0
+
+      - name: Install LLVM
+        run: sudo bash $(pwd)/.github/workflows/install-llvm.sh 16 all
+
+      - name: Export compile commands
+        run: |
+          export CC=clang-16
+          export TOOLCHAIN=$(pwd)/cmake/lld.toolchain.cmake
+          export CMAKE_PREFIX_PATH="/usr/lib/llvm-16/lib/cmake/mlir/;/usr/lib/llvm-16/lib/cmake/clang/"
+          cmake --preset ninja-multi-default --toolchain ${TOOLCHAIN} \
+            -DCMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}
+
+      - name: Run C++ Linters
+        uses: cpp-linter/cpp-linter-action@v2
+        id: linter
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          version: 16
+          style: file
+          database: ./builds/ninja-multi-default/
+          lines-changed-only: true
+          thread-comments: true
+          step-summary: true
+          ignore: 'test'
+          tidy-checks: ''
+
+      - name: Report result
+        if: steps.linter.outputs.checks-failed > 0
+        run:
+          echo "Some files failed the linting checks!"
+          exit 1
