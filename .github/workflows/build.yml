@@ -37,7 +37,7 @@ jobs:
           fetch-depth: 1
 
       - name: Build and run dev container task
-        uses: devcontainers/ci@v0.2
+        uses: devcontainers/ci@v0.3
         with:
           runCmd: |
             export CC=${{ matrix.compiler }}
