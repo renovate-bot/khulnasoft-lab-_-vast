@@ -58,7 +58,7 @@ jobs:
             cpack -G TXZ --config ./builds/ninja-multi-default/CPackConfig.cmake || exit 1
 
       - name: Upload vast package artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: vast-x86_64-ubuntu-22.04
           path: ./builds/ninja-multi-default/package/
